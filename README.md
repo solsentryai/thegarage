@@ -1,6 +1,6 @@
 # THE/GARAGE — Gerador de Avatar & Banner
 
-> Feito pela comunidade do **Superteam Brasil** para amplificar o lançamento do **THE/GARAGE**, a imersão de 3 semanas rumo ao **Colosseum** — o Hackathon Global da Solana.
+> Feito para comunidade do **Superteam Brasil** para amplificar o lançamento do **THE/GARAGE**, a imersão de 3 semanas rumo ao **Colosseum** — o Hackathon Global da Solana.
 
 ![roxo + limão](https://img.shields.io/badge/cores-roxo+lim%C3%A3o-C299EE?style=flat-square)
 ![sem backend](https://img.shields.io/badge/backend-nenhum-EAFD7C?style=flat&labelColor=1a1a1a&color=EAFD7C)
