@@ -10,7 +10,7 @@
 
 ## O que é isso?
 
-O **Shimas** (Superteam Brasil) pediu pra galera trocar a foto de perfil no Twitter pelas cores do THE/GARAGE pra amplificar o alcance do evento no dia do lançamento. A ideia: quanto mais gente com a pfp nas cores roxo + limão, maior a onda.
+Um pedido pra galera trocar a foto de perfil no X/Twitter pelas cores do THE/GARAGE pra amplificar o alcance do evento ate o dia 9 de maio. A ideia: quanto mais gente com a pfp nas cores roxo + limão, maior a onda.
 
 Esse gerador surgiu pra facilitar — qualquer pessoa (membro ou não) pode subir a própria foto, aplicar o efeito duotone halftone e baixar o avatar pronto em segundos.
 
@@ -75,12 +75,6 @@ O processamento de imagem acontece 100% no browser via [Canvas API](https://deve
 
 ## Contexto
 
-**THE/GARAGE** é a imersão de 3 semanas do Superteam Brasil na Solana House, de 20 de abril a 9 de maio de 2025, rumo ao Colosseum — o hackathon global da Solana. Cohort.1.
+**THE/GARAGE** é a imersão de 3 semanas do Superteam Brasil na Solana House, de 20 de abril a 9 de maio de 2025, rumo ao Colosseum — o hackathon global da Solana.
 
 Apoiado por: **Solana · Superteam Brasil · Colosseum**
-
----
-
-## Licença
-
-MIT — usa, adapta e manda ver.
