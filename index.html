@@ -156,6 +156,16 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
         <input type="range" id="bnGS" min="3" max="14" value="7" step="1" style="width:110px;">
         <span class="val" id="bnGSo">7px</span>
       </div>
+      <hr class="sep">
+      <div class="row">
+        <span class="lbl">Foto (opc.)</span>
+        <div id="bnDZ" onclick="document.getElementById('bnFI').click()" style="display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px dashed #444;border-radius:3px;cursor:pointer;font-size:12px;color:#666;transition:all .12s;" onmouseover="this.style.borderColor='#EAFD7C';this.style.color='#EAFD7C'" onmouseout="this.style.borderColor='#444';this.style.color='#666'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span id="bnFIlabel">Escolher foto para o banner</span>
+        </div>
+        <button id="bnFIclear" onclick="clearBnImg()" style="display:none;font-size:11px;color:#555;background:none;border:1px solid #333;border-radius:3px;padding:3px 8px;cursor:pointer;font-family:'Courier New',monospace;">Remover foto</button>
+      </div>
+      <input type="file" id="bnFI" accept="image/*" style="display:none">
       <button class="btn-gen" onclick="renderBanner()">Gerar banner</button>
     </div>
     <div id="bnPV" class="previews" style="display:none;"></div>
@@ -192,6 +202,7 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
 })();
 
 var _img=null;
+var _bnImg=null;
 var VARS=[
   {bg:'#EAFD7C',fg:'#C299EE',inv:false,label:'FUNDO LIMÃO',id:'lime'},
   {bg:'#C299EE',fg:'#EAFD7C',inv:true, label:'FUNDO ROXO', id:'purple'}
@@ -283,8 +294,10 @@ function drawHandle(ctx,sz,txt,fg,bg,hasLg){
   ctx.font='bold '+Math.round(sh*.52)+'px "Courier New",monospace';
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt.trim(),sz/2,y0+sh/2);
 }
-function drawBannerTxt(ctx,sz,t1,t2,t3,fg,bg,hasLg){
-  var pad=sz*.08,maxW=sz-pad*2;ctx.fillStyle=fg;
+function drawBannerTxt(ctx,sz,t1,t2,t3,fg,bg,hasLg,hasPhoto){
+  var pad=sz*.08;
+  var maxW=hasPhoto?(sz*.42-pad):(sz-pad*2);
+  ctx.fillStyle=fg;
   if(t3&&t3.trim()){
     var fs3=Math.round(sz*.037);ctx.font='bold '+fs3+'px "Courier New",monospace';
     var tw3=ctx.measureText(t3.trim().toUpperCase()).width,th3=Math.round(fs3*1.65),ty3=Math.round(sz*.075);
@@ -303,7 +316,7 @@ function drawBannerTxt(ctx,sz,t1,t2,t3,fg,bg,hasLg){
   }
   if(t2&&t2.trim()){
     var fs2=Math.round(sz*.041);ctx.font=fs2+'px "Courier New",Courier,monospace';
-    ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText(t2.trim(),pad,hasLg?sz*.54:sz*.62);
+    ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText(t2.trim(),pad,hasLg?sz*.54:sz*.60);
   }
 }
 function makeCard(bgc,fgc,label,dlName){
@@ -336,10 +349,35 @@ function renderAvatar(){
   });
   pv.style.display='grid';
 }
+function drawBannerPhoto(img,ctx,sz,fg,inv,gs){
+  var startX=Math.round(sz*.44);
+  var tmp=document.createElement('canvas');tmp.width=sz;tmp.height=sz;
+  var tc=tmp.getContext('2d');
+  var s=Math.min(img.width,img.height);
+  var photoW=sz-startX;
+  tc.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,startX,0,photoW,sz);
+  var px=tc.getImageData(0,0,sz,sz).data;
+  ctx.save();
+  ctx.beginPath();ctx.rect(startX,0,photoW,sz);ctx.clip();
+  ctx.fillStyle=fg;ctx.beginPath();
+  for(var y=0;y<sz;y+=gs){
+    for(var x=Math.floor(startX/gs)*gs;x<sz;x+=gs){
+      var sum=0,cnt=0;
+      for(var dy=0;dy<gs&&y+dy<sz;dy++){for(var dx=0;dx<gs&&x+dx<sz;dx++){
+        var i=((y+dy)*sz+(x+dx))*4;sum+=.299*px[i]+.587*px[i+1]+.114*px[i+2];cnt++;
+      }}
+      var lum=sum/cnt/255,t=inv?lum:(1-lum);
+      var r=Math.min((gs/2)*t*1.45,gs/2*.98);
+      if(r>0.15){ctx.moveTo(x+gs/2+r,y+gs/2);ctx.arc(x+gs/2,y+gs/2,r,0,Math.PI*2);}
+    }
+  }
+  ctx.fill();ctx.restore();
+}
 function renderBanner(){
   var t1=document.getElementById('bnT1').value,t2=document.getElementById('bnT2').value,t3=document.getElementById('bnT3').value;
   var ht=document.getElementById('bnHT').checked,lg=document.getElementById('bnLG').checked;
   var gs=parseInt(document.getElementById('bnGS').value);
+  var hasPhoto=!!_bnImg;
   var pv=document.getElementById('bnPV');pv.innerHTML='';var sz=800;
   VARS.forEach(function(v){
     var r=makeCard(v.bg,v.fg,v.label,'banner-thegarage-'+v.id+'.png');
@@ -347,7 +385,8 @@ function renderBanner(){
     pv.appendChild(r.card);var ctx=cv.getContext('2d');
     if(ht) drawWaveHT(ctx,sz,v.bg,v.fg,gs);
     else{ctx.fillStyle=v.bg;ctx.fillRect(0,0,sz,sz);}
-    drawBannerTxt(ctx,sz,t1,t2,t3,v.fg,v.bg,lg);
+    if(hasPhoto) drawBannerPhoto(_bnImg,ctx,sz,v.fg,v.inv,gs);
+    drawBannerTxt(ctx,sz,t1,t2,t3,v.fg,v.bg,lg,hasPhoto);
     if(lg) drawLogos(ctx,sz,v.fg,v.bg);
   });
   pv.style.display='grid';
@@ -367,6 +406,26 @@ document.getElementById('avTXT').oninput=renderAvatar;
 document.getElementById('avLG').onchange=renderAvatar;
 document.getElementById('bnHT').onchange=function(){document.getElementById('bnHTrow').style.display=this.checked?'flex':'none';};
 document.getElementById('bnGS').oninput=function(){document.getElementById('bnGSo').textContent=this.value+'px';};
+document.getElementById('bnFI').onchange=function(e){
+  var f=e.target.files[0];if(!f||!f.type.startsWith('image/'))return;
+  var fr=new FileReader();
+  fr.onload=function(ev){var img=new Image();img.onload=function(){
+    _bnImg=img;
+    document.getElementById('bnFIlabel').textContent='Foto carregada';
+    document.getElementById('bnFIclear').style.display='inline-block';
+    document.getElementById('bnDZ').style.borderColor='#EAFD7C';
+    document.getElementById('bnDZ').style.color='#EAFD7C';
+  };img.src=ev.target.result;};
+  fr.readAsDataURL(f);
+};
+function clearBnImg(){
+  _bnImg=null;
+  document.getElementById('bnFI').value='';
+  document.getElementById('bnFIlabel').textContent='Escolher foto para o banner';
+  document.getElementById('bnFIclear').style.display='none';
+  document.getElementById('bnDZ').style.borderColor='#444';
+  document.getElementById('bnDZ').style.color='#666';
+}
 </script>
 </body>
 </html>
