@@ -56,7 +56,7 @@ h1{
   margin-bottom:0;
 }
 .hero-sub{font-size:12px;color:#1a1a1a;font-weight:600;letter-spacing:.02em;max-width:460px;line-height:1.6;}
-.hero-logos{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-top:1.1rem;padding-top:.9rem;border-top:1px solid rgba(0,0,0,.18);}
+.hero-logos{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-top:.7rem;padding-top:.8rem;border-top:1px solid rgba(0,0,0,.18);}
 .hero-logos span{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.08em;color:#1a1a1a;opacity:.55;text-transform:uppercase;}
 .hero-logos svg{flex-shrink:0;}
 
@@ -94,7 +94,7 @@ input[type=range]{cursor:pointer;accent-color:var(--lime);}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:5px;overflow:hidden;}
 .card-hd{padding:9px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#555;}
 .card-bd{padding:11px;text-align:center;}
-.card-bd canvas{max-width:100%;display:block;}
+.card-bd canvas{max-width:100%;max-height:420px;width:auto;height:auto;display:block;margin:0 auto;}
 .card-ft{padding:0 11px 11px;}
 .dl-btn{width:100%;padding:8px;border:none;border-radius:3px;font-family:'Courier New',monospace;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .12s;}
 .dl-btn:hover{opacity:.85;}
@@ -220,9 +220,9 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
       <div class="row">
       <div class="row">
         <span class="lbl">Tamanho</span>
-        <label class="ck"><input type="radio" name="bnSz" id="szSq" checked> ⬛ Quadrado 1:1</label>
-        <label class="ck"><input type="radio" name="bnSz" id="szLand"> 🖼 X Paisagem 16:9</label>
-        <label class="ck"><input type="radio" name="bnSz" id="szPort"> 📱 X Retrato 4:5</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szSq" checked> Quadrado</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szLand"> X Paisagem</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szPort"> X Retrato</label>
       </div>
       <hr class="sep">
       <div class="row"><label class="ck"><input type="checkbox" id="bnLG" checked> Logos</label></div>
@@ -701,6 +701,7 @@ function renderAvatar(){
   VARS.forEach(function(v){
     var r=makeCard(v.bg,v.fg,v.label,'avatar-thegarage-'+v.id+'.png');
     var cv=r.cv;cv.width=sz;cv.height=sz;cv.style.borderRadius=circ?'50%':'3px';
+    if(szW>szH*1.2) r.card.style.gridColumn='1/-1';
     pv.appendChild(r.card);var ctx=cv.getContext('2d');
     if(circ){
       ctx.fillStyle=v.bg;
