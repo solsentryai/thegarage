@@ -2,15 +2,6 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta property="og:title" content="THE/GARAGE — Gerador de Avatar & Banner">
-<meta property="og:description" content="Troca sua pfp pelas cores do THE/GARAGE e ajuda a mostrar o poder do Brasil na Solana. Cohort.1 · April 20–May 9 · São Paulo.">
-<meta property="og:url" content="https://solsentryai.github.io/thegarage/">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="THE/GARAGE — Gerador de Avatar & Banner">
-<meta name="twitter:description" content="Troca sua pfp pelas cores do THE/GARAGE. Gratuito, sem login, sem photoshop.">
-<meta name="twitter:site" content="@solsentryai">
-<meta name="description" content="Gerador gratuito de avatar e banner pelas cores do THE/GARAGE — SuperTeam Brasil x Solana x Colosseum.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>THE/GARAGE — Gerador de Avatar & Banner</title>
 <link href="https://cdn.jsdelivr.net/npm/@fontsource/cascadia-code@5.0.1/index.css" rel="stylesheet">
@@ -56,7 +47,7 @@ h1{
   margin-bottom:0;
 }
 .hero-sub{font-size:12px;color:#1a1a1a;font-weight:600;letter-spacing:.02em;max-width:460px;line-height:1.6;}
-.hero-logos{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-top:.7rem;padding-top:.8rem;border-top:1px solid rgba(0,0,0,.18);}
+.hero-logos{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-top:1.1rem;padding-top:.9rem;border-top:1px solid rgba(0,0,0,.18);}
 .hero-logos span{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.08em;color:#1a1a1a;opacity:.55;text-transform:uppercase;}
 .hero-logos svg{flex-shrink:0;}
 
@@ -94,7 +85,7 @@ input[type=range]{cursor:pointer;accent-color:var(--lime);}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:5px;overflow:hidden;}
 .card-hd{padding:9px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#555;}
 .card-bd{padding:11px;text-align:center;}
-.card-bd canvas{max-width:100%;max-height:420px;width:auto;height:auto;display:block;margin:0 auto;}
+.card-bd canvas{max-width:100%;display:block;}
 .card-ft{padding:0 11px 11px;}
 .dl-btn{width:100%;padding:8px;border:none;border-radius:3px;font-family:'Courier New',monospace;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .12s;}
 .dl-btn:hover{opacity:.85;}
@@ -134,12 +125,6 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
     </div>
     <h1>THE/GARAGE</h1>
 
-    <div style="display:flex;align-items:center;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
-      <div style="display:flex;gap:6px;align-items:center;background:rgba(0,0,0,.08);border-radius:3px;padding:5px 10px;">
-        <span style="font-size:11px;font-weight:700;color:#1a1a1a;opacity:.7;font-family:'Courier New',monospace;letter-spacing:.04em;">solsentryai.github.io/thegarage</span>
-        <button onclick="copyLink()" id="copyBtn" style="font-size:10px;font-weight:700;background:#1a1a1a;color:var(--lime);border:none;border-radius:2px;padding:3px 8px;cursor:pointer;font-family:'Courier New',monospace;letter-spacing:.04em;">COPIAR</button>
-      </div>
-    </div>
     <div class="hero-logos">
       <span>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect width="12" height="12"/><text x="6" y="9" text-anchor="middle" font-size="6" font-weight="900" fill="#EAFD7C" font-family="monospace">ST</text></svg>
@@ -162,15 +147,7 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
 </div>
 
 <main>
-  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;padding:.75rem 1rem;margin-bottom:1.1rem;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;">
-  <span style="font-size:10px;font-weight:700;color:#555;letter-spacing:.1em;text-transform:uppercase;">Como usar</span>
-  <span style="font-size:12px;color:#888;">1️⃣ Escolhe <b style="color:var(--lime)">Avatar</b> ou <b style="color:var(--lime)">Banner</b></span>
-  <span style="font-size:12px;color:#888;">2️⃣ Sobe sua foto</span>
-  <span style="font-size:12px;color:#888;">3️⃣ Ajusta o estilo</span>
-  <span style="font-size:12px;color:#888;">4️⃣ Baixa o PNG</span>
-  <span style="font-size:12px;color:#888;">5️⃣ Troca sua pfp e compartilha!</span>
-</div>
-<div class="tabs">
+  <div class="tabs">
     <button class="tab on" id="tabAV" onclick="setMode('av')">Avatar (foto)</button>
     <button class="tab" id="tabBN" onclick="setMode('bn')">Banner de texto</button>
   </div>
@@ -220,9 +197,9 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
       <div class="row">
       <div class="row">
         <span class="lbl">Tamanho</span>
-        <label class="ck"><input type="radio" name="bnSz" id="szSq" checked> Quadrado</label>
-        <label class="ck"><input type="radio" name="bnSz" id="szLand"> X Paisagem</label>
-        <label class="ck"><input type="radio" name="bnSz" id="szPort"> X Retrato</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szSq" checked> ⬛ Quadrado 1:1</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szLand"> 🖼 X Paisagem</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szPort"> 📱 X Retrato 4:5</label>
       </div>
       <hr class="sep">
       <div class="row"><label class="ck"><input type="checkbox" id="bnLG" checked> Logos</label></div>
@@ -234,8 +211,8 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
       <div class="row">
         <span class="lbl">Estilo</span>
         <label class="ck"><input type="radio" name="bnPat" id="patWave"> Wave</label>
-        <label class="ck"><input type="radio" name="bnPat" id="patUniform"> Uniforme</label>
-        <label class="ck"><input type="radio" name="bnPat" id="patGrad" checked> Gradiente</label>
+        <label class="ck"><input type="radio" name="bnPat" id="patUniform" checked> Uniforme</label>
+        <label class="ck"><input type="radio" name="bnPat" id="patGrad"> Gradiente</label>
       </div>
       <hr class="sep">
       <div class="row">
@@ -248,9 +225,9 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
       </div>
       <div id="bnPosRow" class="row" style="display:none;">
         <span class="lbl">Posição</span>
-        <label class="ck"><input type="radio" name="bnPos" id="posRight" checked> Direita</label>
+        <label class="ck"><input type="radio" name="bnPos" id="posRight"> Direita</label>
         <label class="ck"><input type="radio" name="bnPos" id="posLeft"> Esquerda</label>
-        <label class="ck"><input type="radio" name="bnPos" id="posFull"> Fundo inteiro</label>
+        <label class="ck"><input type="radio" name="bnPos" id="posFull" checked> Fundo inteiro</label>
       </div>
       <input type="file" id="bnFI" accept="image/*" style="display:none">
       <div class="row">
@@ -454,13 +431,16 @@ function drawLogosArcSegments(ctx,sz,fg,bg){
 }
 function drawLogos(ctx,sz,fg,bg,circ,ht){
   if(circ){drawLogosArcSegments(ctx,sz,fg,bg);return;}
-  var szBase=Math.min(sz,ht||sz);
-  var sh=Math.round(szBase*.09),y0=(ht||sz)-sh,mid=y0+sh/2;
+  var szH=ht||sz;
+  var isLand=sz>szH*1.5;
+  // Landscape: taller bar (13% of szH) + larger font ratio so logos visually fill the wide canvas
+  var sh=isLand?Math.round(szH*.13):Math.round(Math.min(sz,szH)*.09);
+  var y0=szH-sh,mid=y0+sh/2;
   var lpad=Math.round(sz*.015),lw=sz-Math.round(sz*.03);
-  var zw=lw/4,fs=Math.round(sh*.26);
+  var zw=lw/4,fs=Math.round(sh*(isLand?.36:.26));
   var bh=Math.round(fs*.22),bw=Math.round(fs*.68),sp=Math.round(fs*.33);
   ctx.fillStyle=bg;ctx.fillRect(0,y0,sz,sh);
-  ctx.fillStyle=fg;ctx.fillRect(lpad,y0+1,lw,Math.max(1,Math.round(sz*.0015)));
+  ctx.fillStyle=fg;ctx.fillRect(0,y0+1,sz,Math.max(1,Math.round(sz*.0015)));
   ctx.textBaseline='middle';
   // Z1: superteam brasil
   var z1=lpad+zw/2;ctx.font=fs+'px monospace';
@@ -549,15 +529,17 @@ function drawBannerTxt(ctx,sz,szH,t1,t2,t3,fg,bg,hasLg,pos){
   var hasPhoto=!!pos&&pos!=='none';
   var onLeft=pos==='left';
   var isFull=pos==='full';
-  var pad=sz*.08;
-  var areaW=onLeft?(sz*.52-pad):(!isFull&&hasPhoto)?(sz*.42-pad):(sz-Math.round(szMin*.1));
-  var areaX=onLeft?(sz*.48+sz*.04):pad;
-  var logoH=hasLg?Math.round(sz*.09):0;
-  var areaBottom=szH-logoH-Math.round(sz*.02);
-
+  // szMin MUST be computed before areaW (which references it)
   var szMin=Math.min(sz,szH);
-  // For landscape: boost fonts so text fills horizontal space better
-  if(sz>szH*1.5) szMin=Math.round(szH*1.1);
+  var isLand=sz>szH*1.5;
+  // For landscape: boost fonts significantly so text fills horizontal space
+  if(isLand) szMin=Math.round(szH*1.35);
+
+  var pad=isLand?Math.round(szMin*.06):sz*.08;
+  var areaW=onLeft?(sz*.52-pad):(!isFull&&hasPhoto)?(sz*.42-pad):(sz-pad*2);
+  var areaX=onLeft?(sz*.48+sz*.04):pad;
+  var logoH=hasLg?(isLand?Math.round(szH*.13):Math.round(sz*.09)):0;
+  var areaBottom=szH-logoH-Math.round(szMin*.02);
   var fntId=document.getElementById('fntImpact').checked?'impact':'mono';
   var ff=fntId==='impact'?'"Cascadia Code","Courier New",monospace':'"Montserrat",sans-serif';
 
@@ -573,7 +555,7 @@ function drawBannerTxt(ctx,sz,szH,t1,t2,t3,fg,bg,hasLg,pos){
   var isRight = tpos==='tr'||tpos==='br'||tpos==='cr';
   var isBot   = tpos==='bl'||tpos==='br'||tpos==='cb';
   var isCtr   = tpos==='cc'||tpos==='cb'||tpos==='ct';
-  var isVCtr  = isCtr||tpos==='cl'||tpos==='cr';
+  var isVCtr  = tpos==='cc'||tpos==='cl'||tpos==='cr';
 
   // ── measure everything first ──
   var fs3=Math.round(szMin*.034), th3=0, t3lines=[];
@@ -701,7 +683,6 @@ function renderAvatar(){
   VARS.forEach(function(v){
     var r=makeCard(v.bg,v.fg,v.label,'avatar-thegarage-'+v.id+'.png');
     var cv=r.cv;cv.width=sz;cv.height=sz;cv.style.borderRadius=circ?'50%':'3px';
-    if(szW>szH*1.2) r.card.style.gridColumn='1/-1';
     pv.appendChild(r.card);var ctx=cv.getContext('2d');
     if(circ){
       ctx.fillStyle=v.bg;
@@ -723,11 +704,20 @@ function renderAvatar(){
 function drawBannerPhoto(img,ctx,sz,szH,fg,inv,gs,pos){
   var startX=pos==='left'?0:(pos==='full'?0:Math.round(sz*.44));
   var endX=pos==='left'?Math.round(sz*.56):sz;
-  var tmp=document.createElement('canvas');tmp.width=sz;tmp.height=sz;
-  var tc=tmp.getContext('2d');
-  var s=Math.min(img.width,img.height);
   var photoW=endX-startX;
-  tc.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,startX,0,photoW,szH);
+  // Cover-style crop: source region matches dest aspect ratio (no stretch)
+  var destR=photoW/szH, srcR=img.width/img.height;
+  var srcX,srcY,srcW,srcH;
+  if(srcR>destR){
+    srcH=img.height; srcW=Math.round(img.height*destR);
+    srcX=Math.round((img.width-srcW)/2); srcY=0;
+  } else {
+    srcW=img.width; srcH=Math.round(img.width/destR);
+    srcX=0; srcY=Math.round((img.height-srcH)/2);
+  }
+  var tmp=document.createElement('canvas');tmp.width=sz;tmp.height=szH;
+  var tc=tmp.getContext('2d');
+  tc.drawImage(img,srcX,srcY,srcW,srcH,startX,0,photoW,szH);
   var px=tc.getImageData(0,0,sz,szH).data;
   ctx.save();
   ctx.beginPath();ctx.rect(startX,0,photoW,szH);ctx.clip();
@@ -735,7 +725,7 @@ function drawBannerPhoto(img,ctx,sz,szH,fg,inv,gs,pos){
   for(var y=0;y<szH;y+=gs){
     for(var x=Math.floor(startX/gs)*gs;x<endX;x+=gs){
       var sum=0,cnt=0;
-      for(var dy=0;dy<gs&&y+dy<sz;dy++){for(var dx=0;dx<gs&&x+dx<sz;dx++){
+      for(var dy=0;dy<gs&&y+dy<szH;dy++){for(var dx=0;dx<gs&&x+dx<sz;dx++){
         var i=((y+dy)*sz+(x+dx))*4;sum+=.299*px[i]+.587*px[i+1]+.114*px[i+2];cnt++;
       }}
       var lum=sum/cnt/255,t=inv?lum:(1-lum);
@@ -778,26 +768,12 @@ function loadFile(f){
 }
 function onDrop(e){e.preventDefault();document.getElementById('dz').classList.remove('drag');loadFile(e.dataTransfer.files[0]);}
 document.getElementById('fi').onchange=function(e){loadFile(e.target.files[0]);};
-function copyLink(){
-  navigator.clipboard.writeText('https://solsentryai.github.io/thegarage/').then(function(){
-    var btn=document.getElementById('copyBtn');
-    btn.textContent='COPIADO!';btn.style.background='#C299EE';btn.style.color='#1a1a1a';
-    setTimeout(function(){btn.textContent='COPIAR';btn.style.background='#1a1a1a';btn.style.color='var(--lime)';},1800);
-  });
-}
 document.getElementById('circ').onchange=renderAvatar;
 document.getElementById('avGS').oninput=function(){document.getElementById('avGSo').textContent=this.value+'px';renderAvatar();};
 document.getElementById('avTXT').oninput=renderAvatar;
 document.getElementById('avLG').onchange=renderAvatar;
 
-document.getElementById('bnGS').oninput=function(){document.getElementById('bnGSo').textContent=this.value+'px';debounceBanner();};
-var _bnTimer=null;
-function debounceBanner(){clearTimeout(_bnTimer);_bnTimer=setTimeout(function(){if(document.getElementById('bnPV').style.display!=='none')renderBanner();},400);}
-document.getElementById('bnT1').oninput=debounceBanner;
-document.getElementById('bnT2').oninput=debounceBanner;
-document.getElementById('bnT3').oninput=debounceBanner;
-document.querySelectorAll('input[name="bnPat"],input[name="bnSz"],input[name="bnFont"],input[name="bnTP"]').forEach(function(el){el.onchange=debounceBanner;});
-document.getElementById('bnLG').onchange=debounceBanner;
+document.getElementById('bnGS').oninput=function(){document.getElementById('bnGSo').textContent=this.value+'px';bnAutoD();};
 document.getElementById('bnFI').onchange=function(e){
   var f=e.target.files[0];if(!f||!f.type.startsWith('image/'))return;
   var fr=new FileReader();
@@ -808,9 +784,18 @@ document.getElementById('bnFI').onchange=function(e){
     document.getElementById('bnPosRow').style.display='flex';
     document.getElementById('bnDZ').style.borderColor='#EAFD7C';
     document.getElementById('bnDZ').style.color='#EAFD7C';
+    bnAuto();
   };img.src=ev.target.result;};
   fr.readAsDataURL(f);
 };
+// Auto re-render banner on any control change (only after first "Gerar banner" click)
+function bnAuto(){if(document.getElementById('bnPV').style.display!=='none')renderBanner();}
+var _bnT;function bnAutoD(){clearTimeout(_bnT);_bnT=setTimeout(bnAuto,120);}
+['bnT1','bnT2','bnT3'].forEach(function(id){document.getElementById(id).oninput=bnAutoD;});
+['bnLG','szSq','szLand','szPort','patWave','patUniform','patGrad',
+ 'posRight','posLeft','posFull','fntMono','fntImpact',
+ 'tpTL','tpTR','tpBL','tpBR','tpCC','tpCB','tpCT','tpCL','tpCR'
+].forEach(function(id){var el=document.getElementById(id);if(el)el.onchange=bnAuto;});
 function clearBnImg(){
   _bnImg=null;
   document.getElementById('bnFI').value='';
@@ -819,6 +804,7 @@ function clearBnImg(){
   document.getElementById('bnPosRow').style.display='none';
   document.getElementById('bnDZ').style.borderColor='#444';
   document.getElementById('bnDZ').style.color='#666';
+  bnAuto();
 }
 </script>
 </body>
