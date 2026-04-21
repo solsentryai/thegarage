@@ -1,185 +1,824 @@
-# THE/GARAGE — Gerador de Avatar & Banner
-## Devlog completo de desenvolvimento
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta property="og:title" content="THE/GARAGE — Gerador de Avatar & Banner">
+<meta property="og:description" content="Troca sua pfp pelas cores do THE/GARAGE e ajuda a mostrar o poder do Brasil na Solana. Cohort.1 · April 20–May 9 · São Paulo.">
+<meta property="og:url" content="https://solsentryai.github.io/thegarage/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="THE/GARAGE — Gerador de Avatar & Banner">
+<meta name="twitter:description" content="Troca sua pfp pelas cores do THE/GARAGE. Gratuito, sem login, sem photoshop.">
+<meta name="twitter:site" content="@solsentryai">
+<meta name="description" content="Gerador gratuito de avatar e banner pelas cores do THE/GARAGE — SuperTeam Brasil x Solana x Colosseum.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE/GARAGE — Gerador de Avatar & Banner</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/cascadia-code@5.0.1/index.css" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'Montserrat';
+  src: url('Montserrat-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('Montserrat-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
 
----
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--lime:#EAFD7C;--purple:#C299EE;--dark:#111;--surface:#1a1a1a;--border:#2a2a2a;}
+body{background:#111;color:#f0f0f0;font-family:'Courier New',Courier,monospace;min-height:100vh;}
 
-## 📋 Contexto do projeto
+.hero{position:relative;overflow:hidden;background:var(--lime);padding:1.8rem 2rem 1.6rem;}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.hero-inner{position:relative;z-index:2;max-width:860px;margin:0 auto;}
+.brand-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot-p{background:#C299EE;}.dot-l{background:#1a1a1a;}
+.brand-tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1a1a1a;opacity:.6;}
+h1{
+  font-size:clamp(2rem,6vw,3.8rem);font-weight:900;line-height:1;margin-bottom:.5rem;
+  color:var(--lime);
+  -webkit-text-stroke:2px #1a1a1a;
+  paint-order:stroke fill;
+  text-shadow:2px 2px 0 #1a1a1a,-2px -2px 0 #1a1a1a,2px -2px 0 #1a1a1a,-2px 2px 0 #1a1a1a;
+}
+.hero-sub-wrap{
+  display:inline-block;
+  background:rgba(234,253,124,0.88);
+  padding:.3rem .6rem .3rem .1rem;
+  border-radius:2px;
+  margin-bottom:0;
+}
+.hero-sub{font-size:12px;color:#1a1a1a;font-weight:600;letter-spacing:.02em;max-width:460px;line-height:1.6;}
+.hero-logos{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-top:1.1rem;padding-top:.9rem;border-top:1px solid rgba(0,0,0,.18);}
+.hero-logos span{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.08em;color:#1a1a1a;opacity:.55;text-transform:uppercase;}
+.hero-logos svg{flex-shrink:0;}
 
-O **@SuperteamBR** pediu para membros trocarem suas fotos de perfil pelas cores do **THE/GARAGE** — uma imersão de 3 semanas na Solana House (April 20 – May 9, São Paulo) rumo ao Colosseum Hackathon Global da Solana.
+main{max-width:860px;margin:0 auto;padding:2rem 1.5rem 3rem;}
 
-O usuário (não membro) criou uma ferramenta web **gratuita, sem login, single-file HTML** para ajudar a comunidade a gerar os assets.
+.tabs{display:flex;gap:5px;margin-bottom:1.4rem;}
+.tab{padding:7px 18px;font-size:13px;font-weight:700;font-family:'Courier New',monospace;letter-spacing:.05em;border:1.5px solid #333;border-radius:3px;cursor:pointer;background:none;color:#555;transition:all .12s;}
+.tab.on{background:var(--lime);color:#1a1a1a;border-color:var(--lime);}
+.tab:hover:not(.on){border-color:var(--lime);color:var(--lime);}
 
-**Repo:** https://github.com/solsentryai/thegarage  
-**Live:** https://solsentryai.github.io/thegarage/
+.drop-zone{border:2px dashed #333;border-radius:5px;padding:3rem 2rem;text-align:center;cursor:pointer;background:var(--surface);transition:border-color .12s;}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--lime);}
+.drop-icon{width:44px;height:44px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;}
+.drop-zone p{font-size:14px;font-weight:700;color:#f0f0f0;margin-bottom:4px;}
+.drop-zone small{font-size:12px;color:#555;}
 
----
+.ctrl-box{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:.9rem 1rem;margin-top:.9rem;display:flex;flex-direction:column;gap:7px;}
+.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+label.ck{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;color:#ccc;}
+label.ck input{accent-color:var(--lime);cursor:pointer;}
+.lbl{font-size:13px;color:#555;white-space:nowrap;min-width:72px;}
+input[type=text]{background:#222;border:1px solid #333;border-radius:3px;color:#f0f0f0;font-family:'Courier New',monospace;font-size:13px;padding:6px 10px;outline:none;transition:border-color .12s;}
+input[type=text]:focus{border-color:var(--lime);}
+input[type=text]::placeholder{color:#444;}
+input[type=range]{cursor:pointer;accent-color:var(--lime);}
+.val{font-size:13px;font-weight:700;color:var(--lime);min-width:28px;}
+.btn-ghost{font-size:12px;color:#555;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;cursor:pointer;font-family:'Courier New',monospace;transition:all .12s;}
+.btn-ghost:hover{border-color:var(--lime);color:var(--lime);}
+.sep{border:none;border-top:1px solid #222;margin:2px 0;}
+.btn-gen{align-self:flex-start;padding:10px 26px;background:var(--lime);color:#1a1a1a;border:none;border-radius:3px;font-family:'Courier New',monospace;font-weight:900;font-size:13px;letter-spacing:.06em;cursor:pointer;transition:opacity .12s;margin-top:2px;}
+.btn-gen:hover{opacity:.85;}
 
-## 🎨 Brand Kit
+.previews{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.4rem;}
+@media(max-width:560px){.previews{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:5px;overflow:hidden;}
+.card-hd{padding:9px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#555;}
+.card-bd{padding:11px;text-align:center;}
+.card-bd canvas{max-width:100%;display:block;}
+.card-ft{padding:0 11px 11px;}
+.dl-btn{width:100%;padding:8px;border:none;border-radius:3px;font-family:'Courier New',monospace;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .12s;}
+.dl-btn:hover{opacity:.85;}
 
-| Item | Valor |
-|---|---|
-| Cor limão | `#EAFD7C` |
-| Cor roxo | `#C299EE` |
-| Cor dark | `#1a1a1a` |
-| Fonte principal | Montserrat (variable font, local) |
-| Fonte secundária | Cascadia Code (via fontsource CDN) |
-| Estilo visual | Duotone halftone pontilhado |
+footer{text-align:center;padding:1.5rem;color:#2a2a2a;font-size:11px;letter-spacing:.08em;border-top:1px solid #1a1a1a;}
+footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
+.footer-credit{
+  margin-top:.85rem;
+  font-family:'Montserrat',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  color:var(--lime);
+  -webkit-text-stroke:1.5px #1a1a1a;
+  paint-order:stroke fill;
+  text-shadow:1.5px 1.5px 0 #1a1a1a,-1.5px -1.5px 0 #1a1a1a,1.5px -1.5px 0 #1a1a1a,-1.5px 1.5px 0 #1a1a1a;
+  letter-spacing:.03em;
+}
+.footer-credit a{
+  color:var(--lime);
+  text-decoration:underline;
+  text-decoration-color:rgba(234,253,124,.4);
+  -webkit-text-stroke:1.5px #1a1a1a;
+}
+.footer-credit a:hover{text-decoration-color:var(--lime);}
+</style>
+</head>
+<body>
 
-**Logos (ordem oficial):** superteamBR · THE/GARAGE · SOLANA · COLOSSEUM
+<div aria-hidden="true" style="position:absolute;opacity:0;pointer-events:none;font-family:'Montserrat',sans-serif;font-weight:900;">THE/GARAGE</div>
+<div class="hero" id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-inner">
+    <div class="brand-row">
+      <div class="dot dot-p"></div>
+      <div class="dot dot-l"></div>
+      <span class="brand-tag">SuperTeam Brasil</span>
+    </div>
+    <h1>THE/GARAGE</h1>
 
-**Ícones canvas:**
-- superteamBR → quadrado preenchido com "ST" invertido
-- THE/GARAGE → casinha com porta recortada
-- SOLANA → 3 barras horizontais (estilo logo oficial)
-- COLOSSEUM → 3 colunas com capitel
+    <div style="display:flex;align-items:center;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
+      <div style="display:flex;gap:6px;align-items:center;background:rgba(0,0,0,.08);border-radius:3px;padding:5px 10px;">
+        <span style="font-size:11px;font-weight:700;color:#1a1a1a;opacity:.7;font-family:'Courier New',monospace;letter-spacing:.04em;">solsentryai.github.io/thegarage</span>
+        <button onclick="copyLink()" id="copyBtn" style="font-size:10px;font-weight:700;background:#1a1a1a;color:var(--lime);border:none;border-radius:2px;padding:3px 8px;cursor:pointer;font-family:'Courier New',monospace;letter-spacing:.04em;">COPIAR</button>
+      </div>
+    </div>
+    <div class="hero-logos">
+      <span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect width="12" height="12"/><text x="6" y="9" text-anchor="middle" font-size="6" font-weight="900" fill="#EAFD7C" font-family="monospace">ST</text></svg>
+        superteam brasil
+      </span>
+      <span>
+        <svg width="9" height="10" viewBox="0 0 9 10" fill="currentColor"><polygon points="4.5,0 0,4.5 9,4.5"/><rect x="1.2" y="4.5" width="6.6" height="5.5"/><rect x="3.3" y="6.5" width="2.4" height="3.5" fill="#EAFD7C"/></svg>
+        THE/GARAGE
+      </span>
+      <span>
+        <svg width="10" height="8" viewBox="0 0 10 8" fill="currentColor"><rect x="1.5" y="0" width="8" height="2"/><rect x="0" y="3" width="8" height="2"/><rect x="1.5" y="6" width="8" height="2"/></svg>
+        SOLANA
+      </span>
+      <span>
+        <svg width="10" height="9" viewBox="0 0 10 9" fill="currentColor"><rect x="0" y="2" width="2" height="7"/><rect x="4" y="2" width="2" height="7"/><rect x="8" y="2" width="2" height="7"/><rect x="0" y="0" width="10" height="2"/></svg>
+        COLOSSEUM
+      </span>
+    </div>
+  </div>
+</div>
 
----
+<main>
+  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;padding:.75rem 1rem;margin-bottom:1.1rem;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;">
+  <span style="font-size:10px;font-weight:700;color:#555;letter-spacing:.1em;text-transform:uppercase;">Como usar</span>
+  <span style="font-size:12px;color:#888;">1️⃣ Escolhe <b style="color:var(--lime)">Avatar</b> ou <b style="color:var(--lime)">Banner</b></span>
+  <span style="font-size:12px;color:#888;">2️⃣ Sobe sua foto</span>
+  <span style="font-size:12px;color:#888;">3️⃣ Ajusta o estilo</span>
+  <span style="font-size:12px;color:#888;">4️⃣ Baixa o PNG</span>
+  <span style="font-size:12px;color:#888;">5️⃣ Troca sua pfp e compartilha!</span>
+</div>
+<div class="tabs">
+    <button class="tab on" id="tabAV" onclick="setMode('av')">Avatar (foto)</button>
+    <button class="tab" id="tabBN" onclick="setMode('bn')">Banner de texto</button>
+  </div>
 
-## 🏗️ Arquitetura do projeto
+  <div id="secAV">
+    <div class="drop-zone" id="dz"
+      onclick="document.getElementById('fi').click()"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="onDrop(event)">
+      <div class="drop-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <p>Arraste ou clique para escolher sua foto</p>
+      <small>JPG ou PNG · rosto funciona melhor</small>
+    </div>
+    <input type="file" id="fi" accept="image/*" style="display:none">
+    <div id="avCtrl" class="ctrl-box" style="display:none;">
+      <div class="row">
+        <label class="ck"><input type="checkbox" id="circ" checked> Circular</label>
+        <label class="ck"><input type="checkbox" id="avLG" checked style="accent-color:#C299EE;"> Logos</label>
+        <button class="btn-ghost" onclick="document.getElementById('fi').click()">Trocar foto</button>
+      </div>
+      <hr class="sep">
+      <div class="row">
+        <span class="lbl">Pontos</span>
+        <input type="range" id="avGS" min="3" max="12" value="5" step="1" style="width:110px;">
+        <span class="val" id="avGSo">5px</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Handle / nome</span>
+        <input type="text" id="avTXT" placeholder="@seuhandle" style="flex:1;max-width:230px;" autocomplete="off">
+      </div>
+    </div>
+    <div id="avPV" class="previews" style="display:none;"></div>
+  </div>
 
-```
-thegarage/
-├── index.html                          # App completo single-file
-├── Montserrat-VariableFont_wght.ttf    # Fonte local (variable font)
-├── Montserrat-Italic-VariableFont_wght.ttf
-└── README.md
-```
+  <div id="secBN" style="display:none;">
+    <div class="ctrl-box">
+      <div class="row"><span class="lbl">Título</span><input type="text" id="bnT1" placeholder="Design Thinking" style="flex:1;font-weight:700;font-size:14px;" autocomplete="off"></div>
+      <div class="row"><span class="lbl">Subtítulo</span><input type="text" id="bnT2" placeholder="com Miro Leite · April 14 · Online" style="flex:1;" autocomplete="off"></div>
+      <div class="row"><span class="lbl">Tag</span><input type="text" id="bnT3" placeholder="THE/GARAGE · Cohort.1" style="width:230px;" autocomplete="off"></div>
+      <hr class="sep">
+      <div class="row">
+      <div class="row">
+        <span class="lbl">Tamanho</span>
+        <label class="ck"><input type="radio" name="bnSz" id="szSq" checked> ⬛ Quadrado 1:1</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szLand"> 🖼 X Paisagem 16:9</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szPort"> 📱 X Retrato 4:5</label>
+      </div>
+      <hr class="sep">
+      <div class="row"><label class="ck"><input type="checkbox" id="bnLG" checked> Logos</label></div>
+      <div class="row">
+        <span class="lbl">Pontos</span>
+        <input type="range" id="bnGS" min="3" max="14" value="7" step="1" style="width:110px;">
+        <span class="val" id="bnGSo">7px</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Estilo</span>
+        <label class="ck"><input type="radio" name="bnPat" id="patWave"> Wave</label>
+        <label class="ck"><input type="radio" name="bnPat" id="patUniform"> Uniforme</label>
+        <label class="ck"><input type="radio" name="bnPat" id="patGrad" checked> Gradiente</label>
+      </div>
+      <hr class="sep">
+      <div class="row">
+        <span class="lbl">Foto (opc.)</span>
+        <div id="bnDZ" onclick="document.getElementById('bnFI').click()" style="display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px dashed #444;border-radius:3px;cursor:pointer;font-size:12px;color:#666;transition:all .12s;" onmouseover="this.style.borderColor='#EAFD7C';this.style.color='#EAFD7C'" onmouseout="this.style.borderColor='#444';this.style.color='#666'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span id="bnFIlabel">Escolher foto para o banner</span>
+        </div>
+        <button id="bnFIclear" onclick="clearBnImg()" style="display:none;font-size:11px;color:#555;background:none;border:1px solid #333;border-radius:3px;padding:3px 8px;cursor:pointer;font-family:'Courier New',monospace;">Remover foto</button>
+      </div>
+      <div id="bnPosRow" class="row" style="display:none;">
+        <span class="lbl">Posição</span>
+        <label class="ck"><input type="radio" name="bnPos" id="posRight" checked> Direita</label>
+        <label class="ck"><input type="radio" name="bnPos" id="posLeft"> Esquerda</label>
+        <label class="ck"><input type="radio" name="bnPos" id="posFull"> Fundo inteiro</label>
+      </div>
+      <input type="file" id="bnFI" accept="image/*" style="display:none">
+      <div class="row">
+        <span class="lbl">Fonte</span>
+        <label class="ck"><input type="radio" name="bnFont" id="fntMono" checked> Montserrat</label>
+        <label class="ck"><input type="radio" name="bnFont" id="fntImpact"> Cascadia</label>
+      </div>
+      <div class="row" style="align-items:flex-start;">
+        <span class="lbl">Posição texto</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 10px;">
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpTL" checked> ↖ esq. cima</label>
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpCT"> ↑ centro cima</label>
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpTR"> ↗ dir. cima</label>
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpCL"> ← centro esq.</label>
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpCC"> ⊕ centro</label>
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpCR"> → centro dir.</label>
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpBL"> ↙ esq. baixo</label>
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpCB"> ⊕↓ centro baixo</label>
+          <label class="ck" style="font-size:12px;"><input type="radio" name="bnTP" id="tpBR"> ↘ dir. baixo</label>
+        </div>
+      </div>
+      <button class="btn-gen" onclick="renderBanner()">Gerar banner</button>
+    </div>
+    <div id="bnPV" class="previews" style="display:none;"></div>
+  </div>
+</main>
 
-### Stack
-- **Zero dependências externas** (exceto Cascadia Code via CDN fontsource)
-- **Canvas API** para geração de imagens
-- **@font-face CSS** para Montserrat local
-- **GitHub Pages** para deploy
+<footer>
+  <a href="https://github.com/solsentryai/thegarage" target="_blank">github.com/solsentryai/thegarage</a>
+  &nbsp;·&nbsp; THE/GARAGE Cohort.1 &nbsp;·&nbsp; SuperTeam Brasil
+  <div class="footer-credit">
+    Criado por <a href="https://x.com/crashdiniz" target="_blank">Crash</a>
+    &nbsp;· builder of&nbsp;<a href="https://x.com/solsentryai" target="_blank">Solsentry</a>
+    &nbsp;· on THE/GARAGE for hackathon frontier
+  </div>
+</footer>
 
----
+<script>
 
-## ✅ AVATAR — Estado final (TRAVADO, não mexer)
+(function(){
+  var cv=document.getElementById('heroCanvas');
+  var hero=document.getElementById('hero');
+  function resize(){cv.width=hero.offsetWidth;cv.height=hero.offsetHeight;draw();}
+  function draw(){
+    var ctx=cv.getContext('2d'),w=cv.width,h=cv.height,gs=9;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#C299EE';ctx.beginPath();
+    for(var y=0;y<h;y+=gs){for(var x=0;x<w;x+=gs){
+      var nx=x/w;
+      var t=Math.max(0,Math.min(1,(nx-0.48)/0.48));
+      if(t<0.01) continue;
+      var dr=Math.min((gs/2)*Math.pow(t,0.55)*.92,gs/2*.9);
+      if(dr>0.2){ctx.moveTo(x+gs/2+dr,y+gs/2);ctx.arc(x+gs/2,y+gs/2,dr,0,Math.PI*2);ctx.closePath();}
+    }}
+    ctx.fill();
+  }
+  resize();window.addEventListener('resize',resize);
+})();
 
-### Funcionalidades
-- Upload drag & drop + clique
-- **Halftone sempre ativo** (toggle removido) — slider de pontos 3–12px
-- Toggle **Circular** (default checked) / Quadrado
-- Toggle **Logos** (default checked)
-- Campo **Handle / nome** com stroke 40% em Montserrat
+var _img=null;
+var _bnImg=null;
+var VARS=[
+  {bg:'#EAFD7C',fg:'#C299EE',inv:false,label:'FUNDO LIMÃO',id:'lime'},
+  {bg:'#C299EE',fg:'#EAFD7C',inv:true, label:'FUNDO ROXO', id:'purple'}
+];
 
-### Modo Circular
-- Clip de círculo aplicado a tudo: foto + handle + logos
-- **Logos em arco** (`drawLogosArcSegments`) — 4 segmentos independentes com ícones canvas desenhados no ângulo do arco
-- **Handle em arco** (`arcText` com `skipBg=true`) — sem strip de fundo, só stroke+fill
-- Ordem de draw: foto → logos → handle (handle fica por cima)
-- Handle radius: `sz/2 * 0.70` com logos, `sz/2 * 0.91` sem logos
-- Logo arc radius: `sz/2 * 0.87`
+function setMode(m){
+  document.getElementById('secAV').style.display=m==='av'?'block':'none';
+  document.getElementById('secBN').style.display=m==='bn'?'block':'none';
+  document.getElementById('tabAV').className='tab'+(m==='av'?' on':'');
+  document.getElementById('tabBN').className='tab'+(m==='bn'?' on':'');
+}
+function h2r(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
 
-### Modo Quadrado
-- Logos barra reta (`drawLogos` com `circ=false`)
-- Handle com stroke 40% Montserrat, sem barra de fundo
+function drawPhotoHT(img,ctx,sz,bg,fg,inv,circ,gs){
+  var tmp=document.createElement('canvas');tmp.width=sz;tmp.height=sz;
+  var tc=tmp.getContext('2d');
+  var s=Math.min(img.width,img.height);
+  tc.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,sz,sz);
+  var px=tc.getImageData(0,0,sz,sz).data;
+  ctx.save();
+  if(circ){ctx.beginPath();ctx.arc(sz/2,sz/2,sz/2,0,Math.PI*2);ctx.clip();}
+  ctx.fillStyle=bg;ctx.fillRect(0,0,sz,sz);
+  ctx.fillStyle=fg;ctx.beginPath();
+  for(var y=0;y<sz;y+=gs){for(var x=0;x<sz;x+=gs){
+    var sum=0,cnt=0;
+    for(var dy=0;dy<gs&&y+dy<sz;dy++){for(var dx=0;dx<gs&&x+dx<sz;dx++){
+      var i=((y+dy)*sz+(x+dx))*4;sum+=.299*px[i]+.587*px[i+1]+.114*px[i+2];cnt++;
+    }}
+    var lum=sum/cnt/255,t=inv?lum:(1-lum);
+    var r=Math.min((gs/2)*t*1.45,gs/2*.98);
+    if(r>0.15){ctx.moveTo(x+gs/2+r,y+gs/2);ctx.arc(x+gs/2,y+gs/2,r,0,Math.PI*2);}
+  }}
+  ctx.fill();ctx.restore();
+}
+function drawPhotoDT(img,ctx,sz,bg,fg,circ){
+  var tmp=document.createElement('canvas');tmp.width=sz;tmp.height=sz;
+  var tc=tmp.getContext('2d');
+  var s=Math.min(img.width,img.height);
+  tc.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,sz,sz);
+  var id=tc.getImageData(0,0,sz,sz);var d=id.data;
+  var bc=h2r(fg),lc=h2r(bg);
+  for(var j=0;j<d.length;j+=4){
+    var l=(.299*d[j]+.587*d[j+1]+.114*d[j+2])/255;
+    d[j]=Math.round(bc[0]+(lc[0]-bc[0])*l);d[j+1]=Math.round(bc[1]+(lc[1]-bc[1])*l);
+    d[j+2]=Math.round(bc[2]+(lc[2]-bc[2])*l);d[j+3]=255;
+  }
+  if(circ){ctx.save();ctx.beginPath();ctx.arc(sz/2,sz/2,sz/2,0,Math.PI*2);ctx.clip();ctx.putImageData(id,0,0);ctx.restore();}
+  else ctx.putImageData(id,0,0);
+}
+function drawWaveHT(ctx,w,h,bg,fg,gs){
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle=fg;ctx.beginPath();
+  for(var y=0;y<=h;y+=gs){for(var x=0;x<=w;x+=gs){
+    var dx=(x-w/2)/w,dy=(y-h/2)/h;
+    var r=Math.sqrt(dx*dx+dy*dy),a=Math.atan2(dy,dx);
+    var wv=(Math.sin(r*28-a*4+Math.sin(r*12)*2)+1)/2;
+    var dr=Math.min((gs/2)*Math.pow(wv,.75)*.88,gs/2*.82);
+    if(dr>0.2){ctx.moveTo(x+gs/2+dr,y+gs/2);ctx.arc(x+gs/2,y+gs/2,dr,0,Math.PI*2);ctx.closePath();}
+  }}
+  ctx.fill();
+}
+function drawUniformDots(ctx,w,h,bg,fg,gs){
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  var r=gs*.32;
+  ctx.fillStyle=fg;ctx.beginPath();
+  for(var y=gs/2;y<h;y+=gs){for(var x=gs/2;x<w;x+=gs){
+    ctx.moveTo(x+r,y);ctx.arc(x,y,r,0,Math.PI*2);ctx.closePath();
+  }}
+  ctx.fill();
+}
+function drawGradientDots(ctx,w,h,bg,fg,gs){
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle=fg;ctx.beginPath();
+  for(var y=gs/2;y<h;y+=gs){for(var x=gs/2;x<w;x+=gs){
+    var t=x/w;
+    var r=(gs/2)*(0.15+Math.pow(t,.55)*.85);
+    if(r>0.2){ctx.moveTo(x+r,y);ctx.arc(x,y,r,0,Math.PI*2);ctx.closePath();}
+  }}
+  ctx.fill();
+}
+function drawLogosArcSegments(ctx,sz,fg,bg){
+  var r=sz/2*.87,cx=sz/2,cy=sz/2;
+  var fs=Math.round(sz*.027);
+  var iSz=Math.round(fs*.7);
+  var sp=Math.round(iSz*.34),bh=Math.round(iSz*.22),bw=Math.round(iSz*.68);
+  var totalSpan=Math.PI*.80,arcC=Math.PI/2;
+  // Background strip
+  ctx.save();ctx.strokeStyle=bg;ctx.lineWidth=Math.round(fs*2.3);ctx.lineCap='square';
+  ctx.beginPath();ctx.arc(cx,cy,r,arcC-totalSpan/2-.05,arcC+totalSpan/2+.05);ctx.stroke();ctx.restore();
+  ctx.fillStyle=fg;ctx.font='bold '+fs+'px "Courier New",monospace';
+  var segs=[
+    {txt:'superteamBR',drawI:function(ctx,ox,oy){
+      ctx.fillRect(ox-iSz*.44,oy-iSz*.44,iSz*.88,iSz*.88);
+      ctx.fillStyle=bg;ctx.font='bold '+Math.round(fs*.44)+'px "Courier New",monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('ST',ox,oy+1);
+      ctx.fillStyle=fg;ctx.font='bold '+fs+'px "Courier New",monospace';
+    }},
+    {txt:'THE/GARAGE',drawI:function(ctx,ox,oy){
+      ctx.beginPath();ctx.moveTo(ox,oy-iSz*.52);ctx.lineTo(ox-iSz*.48,oy-iSz*.08);ctx.lineTo(ox+iSz*.48,oy-iSz*.08);ctx.closePath();ctx.fill();
+      ctx.fillRect(ox-iSz*.32,oy-iSz*.08,iSz*.64,iSz*.56);
+      ctx.fillStyle=bg;ctx.fillRect(ox-iSz*.12,oy+iSz*.1,iSz*.24,iSz*.38);ctx.fillStyle=fg;
+    }},
+    {txt:'SOLANA',drawI:function(ctx,ox,oy){
+      ctx.fillRect(ox-bw/2+Math.round(bw*.12),oy-sp-bh/2,bw,bh);
+      ctx.fillRect(ox-bw/2,oy-bh/2,bw,bh);
+      ctx.fillRect(ox-bw/2+Math.round(bw*.12),oy+sp-bh/2,bw,bh);
+    }},
+    {txt:'COLOSSEUM',drawI:function(ctx,ox,oy){
+      var cW=Math.round(iSz*.14),cH=Math.round(iSz*.6),cG=Math.round(iSz*.23);
+      var px=-cW-cG;
+      for(var c=0;c<3;c++){ctx.fillRect(ox+px,oy-cH/2,cW,cH);ctx.fillRect(ox+px-1,oy-cH/2-3,cW+2,3);px+=cW+cG;}
+    }}
+  ];
+  var segSpan=totalSpan/4;
+  segs.forEach(function(seg,i){
+    var segC=arcC+totalSpan/2-segSpan*i-segSpan/2;
+    var tw=ctx.measureText(seg.txt).width;
+    var totalW=iSz*1.1+5+tw;
+    var startA=segC+totalW/(2*r);
+    // Draw icon
+    ctx.save();
+    ctx.translate(cx+r*Math.cos(startA),cy+r*Math.sin(startA));
+    ctx.rotate(startA-Math.PI/2);
+    seg.drawI(ctx,0,0);
+    ctx.restore();
+    // Draw text char by char
+    var textA=startA-(iSz*1.1+5)/r;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    var chars=seg.txt.split(''),step=tw/(chars.length||1)/r;
+    var cA=textA-step/2;
+    for(var j=0;j<chars.length;j++){
+      cA-=step;
+      ctx.save();
+      ctx.translate(cx+r*Math.cos(cA),cy+r*Math.sin(cA));
+      ctx.rotate(cA-Math.PI/2);
+      ctx.fillText(chars[j],0,0);
+      ctx.restore();
+    }
+  });
+}
+function drawLogos(ctx,sz,fg,bg,circ,ht){
+  if(circ){drawLogosArcSegments(ctx,sz,fg,bg);return;}
+  var szBase=Math.min(sz,ht||sz);
+  var sh=Math.round(szBase*.09),y0=(ht||sz)-sh,mid=y0+sh/2;
+  var lpad=Math.round(sz*.015),lw=sz-Math.round(sz*.03);
+  var zw=lw/4,fs=Math.round(sh*.26);
+  var bh=Math.round(fs*.22),bw=Math.round(fs*.68),sp=Math.round(fs*.33);
+  ctx.fillStyle=bg;ctx.fillRect(0,y0,sz,sh);
+  ctx.fillStyle=fg;ctx.fillRect(lpad,y0+1,lw,Math.max(1,Math.round(sz*.0015)));
+  ctx.textBaseline='middle';
+  // Z1: superteam brasil
+  var z1=lpad+zw/2;ctx.font=fs+'px monospace';
+  var stTW=ctx.measureText('superteamBR').width,sqS=Math.round(fs*.88),stTot=sqS+5+stTW,stx=z1-stTot/2;
+  ctx.font='bold '+fs+'px monospace';ctx.fillRect(stx,mid-sqS/2,sqS,sqS);
+  ctx.fillStyle=bg;ctx.font='bold '+Math.round(fs*.47)+'px monospace';ctx.textAlign='center';ctx.fillText('ST',stx+sqS/2,mid);
+  ctx.fillStyle=fg;ctx.font=fs+'px monospace';ctx.textAlign='left';ctx.fillText('superteamBR',stx+sqS+5,mid);
+  // Z2: THE/GARAGE with house icon
+  var gCx=lpad+zw+zw/2,gTxt='THE/GARAGE';
+  ctx.font='bold '+fs+'px monospace';
+  var gtw=ctx.measureText(gTxt).width,iSz=Math.round(fs*.65);
+  var gStartX=gCx-(iSz+5+gtw)/2;
+  ctx.fillStyle=fg;
+  ctx.beginPath();ctx.moveTo(gStartX+iSz/2,mid-iSz*.52);ctx.lineTo(gStartX,mid-iSz*.08);ctx.lineTo(gStartX+iSz,mid-iSz*.08);ctx.closePath();ctx.fill();
+  ctx.fillRect(gStartX+iSz*.12,mid-iSz*.08,iSz*.76,iSz*.58);
+  ctx.fillStyle=bg;ctx.fillRect(gStartX+iSz*.35,mid+iSz*.12,iSz*.3,iSz*.38);
+  ctx.fillStyle=fg;ctx.textAlign='left';ctx.fillText(gTxt,gStartX+iSz+5,mid);
+  // Z3: SOLANA
+  var z3=lpad+zw*2+zw/2;ctx.font='bold '+fs+'px monospace';
+  var sTW=ctx.measureText('SOLANA').width,stot=bw+5+sTW,sx=z3-stot/2;
+  ctx.fillRect(sx+Math.round(bw*.15),mid-sp-bh/2,bw,bh);ctx.fillRect(sx,mid-bh/2,bw,bh);ctx.fillRect(sx+Math.round(bw*.15),mid+sp-bh/2,bw,bh);
+  ctx.textAlign='left';ctx.fillText('SOLANA',sx+bw+5,mid);
+  // Z4: COLOSSEUM
+  var z4=lpad+zw*3+zw/2,colH=Math.round(fs*.6),colW=Math.round(fs*.14),colG=Math.round(fs*.23),pillW=3*colW+2*colG;
+  ctx.font=fs+'px monospace';var colTW=ctx.measureText('COLOSSEUM').width,colTot=pillW+5+colTW,colx=z4-colTot/2;
+  ctx.fillStyle=fg;
+  for(var c=0;c<3;c++){var px_=colx+c*(colW+colG);ctx.fillRect(px_,mid-colH/2,colW,colH);ctx.fillRect(px_-1,mid-colH/2-3,colW+2,3);}
+  ctx.textAlign='left';ctx.fillText('COLOSSEUM',colx+pillW+5,mid);
+}
+function arcText(ctx,text,cx,cy,r,fg,bg,fs,arcCenter,arcSpan,fontFam,strokeW,skipBg){
+  fontFam=fontFam||'"Courier New",monospace';
+  var chars=text.split('');var n=chars.length;if(!n)return;
+  var step=arcSpan/n;
+  // Background arc strip
+  if(!skipBg){
+    ctx.save();
+    ctx.strokeStyle=bg;
+    ctx.lineWidth=Math.round(fs*2.0);
+    ctx.lineCap='square';
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,arcCenter-arcSpan/2-0.04,arcCenter+arcSpan/2+0.04);
+    ctx.stroke();
+    ctx.restore();
+  }
+  // Characters — start from left (larger angle) going right (decreasing angle)
+  ctx.font='bold '+fs+'px '+fontFam;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  var startA=arcCenter+arcSpan/2-step/2;
+  for(var i=0;i<n;i++){
+    var a=startA-i*step;
+    ctx.save();
+    ctx.translate(cx+r*Math.cos(a),cy+r*Math.sin(a));
+    ctx.rotate(a-Math.PI/2);
+    if(strokeW){
+      ctx.strokeStyle=bg;ctx.lineWidth=strokeW;ctx.lineJoin='round';ctx.miterLimit=2;
+      ctx.strokeText(chars[i],0,0);
+    }
+    ctx.fillStyle=fg;
+    ctx.fillText(chars[i],0,0);
+    ctx.restore();
+  }
+}
+function drawHandle(ctx,sz,txt,fg,bg,hasLg,circ){
+  if(!txt||!txt.trim())return;
+  if(circ){
+    var fs=Math.round(sz*.065);
+    ctx.font='bold '+fs+'px "Montserrat",sans-serif';
+    var tw=ctx.measureText(txt.trim()).width;
+    var r=sz/2*(hasLg?.70:.83);
+    var span=Math.min((tw*1.2)/r, Math.PI*.65);
+    arcText(ctx,txt.trim(),sz/2,sz/2,r,fg,bg,fs,Math.PI/2,span,'"Montserrat",sans-serif',Math.round(fs*.40),true);
+    return;
+  }
+  var sh=Math.round(sz*.075),lgSh=hasLg?Math.round(sz*.09):0,y0=sz-sh-lgSh;
+  var hfs=Math.round(sz*.065);
+  ctx.font='bold '+hfs+'px "Montserrat",sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.save();
+  ctx.strokeStyle=bg;ctx.lineWidth=Math.round(hfs*.40);ctx.lineJoin='round';ctx.miterLimit=2;
+  ctx.strokeText(txt.trim(),sz/2,y0+sh/2);
+  ctx.fillStyle=fg;ctx.fillText(txt.trim(),sz/2,y0+sh/2);
+  ctx.restore();
+}
+function drawBannerTxt(ctx,sz,szH,t1,t2,t3,fg,bg,hasLg,pos){
+  if(!szH) szH=sz;
+  var hasPhoto=!!pos&&pos!=='none';
+  var onLeft=pos==='left';
+  var isFull=pos==='full';
+  var pad=sz*.08;
+  var areaW=onLeft?(sz*.52-pad):(!isFull&&hasPhoto)?(sz*.42-pad):(sz-Math.round(szMin*.1));
+  var areaX=onLeft?(sz*.48+sz*.04):pad;
+  var logoH=hasLg?Math.round(sz*.09):0;
+  var areaBottom=szH-logoH-Math.round(sz*.02);
 
-### Download
-- 2 variantes: **Fundo Limão** (bg=#EAFD7C, fg=#C299EE) e **Fundo Roxo** (bg=#C299EE, fg=#EAFD7C)
-- PNG 800×800
+  var szMin=Math.min(sz,szH);
+  // For landscape: boost fonts so text fills horizontal space better
+  if(sz>szH*1.5) szMin=Math.round(szH*1.1);
+  var fntId=document.getElementById('fntImpact').checked?'impact':'mono';
+  var ff=fntId==='impact'?'"Cascadia Code","Courier New",monospace':'"Montserrat",sans-serif';
 
----
+  var tpos=document.getElementById('tpTR').checked?'tr':
+           document.getElementById('tpBL').checked?'bl':
+           document.getElementById('tpBR').checked?'br':
+           document.getElementById('tpCC').checked?'cc':
+           document.getElementById('tpCB').checked?'cb':
+           document.getElementById('tpCT').checked?'ct':
+           document.getElementById('tpCL').checked?'cl':
+           document.getElementById('tpCR').checked?'cr':'tl';
 
-## ✅ HERO DO SITE — Estado final (TRAVADO, não mexer)
+  var isRight = tpos==='tr'||tpos==='br'||tpos==='cr';
+  var isBot   = tpos==='bl'||tpos==='br'||tpos==='cb';
+  var isCtr   = tpos==='cc'||tpos==='cb'||tpos==='ct';
+  var isVCtr  = isCtr||tpos==='cl'||tpos==='cr';
 
-- Background limão `#EAFD7C`
-- Título "THE/GARAGE" em Courier New, **texto limão com stroke preto** (−webkit-text-stroke 2px)
-- **Halftone gradiente** em canvas: pontos roxos começam em 48% da largura, crescem para a direita com `closePath()` (sem elipses)
-- Logos HTML com **ícones SVG inline**: ST, casinha, 3 barras, colunas
+  // ── measure everything first ──
+  var fs3=Math.round(szMin*.034), th3=0, t3lines=[];
+  if(t3&&t3.trim()){
+    ctx.font='bold '+fs3+'px '+ff;
+    th3=Math.round(fs3*1.6);
+  }
 
----
+  var fs1=Math.round(szMin*.115), t1lines=[], lh1=0;
+  if(t1&&t1.trim()){
+    ctx.font='bold '+fs1+'px '+ff;
+    var t1c=t1.trim().toUpperCase();
+    while(ctx.measureText(t1c).width>areaW&&fs1>24){fs1-=3;ctx.font='bold '+fs1+'px '+ff;}
+    lh1=Math.round(fs1*1.05);
+    var words=t1c.split(' '),line='';
+    words.forEach(function(w){var t=line?line+' '+w:w;if(ctx.measureText(t).width>areaW){t1lines.push(line);line=w;}else line=t;});
+    if(line)t1lines.push(line);
+  }
 
-## 🔧 BANNER — Estado atual (em ajuste)
+  var fs2=Math.round(szMin*.042), t2lines=[], lh2=0;
+  if(t2&&t2.trim()){
+    ctx.font=fs2+'px '+ff;
+    lh2=Math.round(fs2*1.45);
+    var words2=t2.trim().split(' '),line2='';
+    words2.forEach(function(w){var t=line2?line2+' '+w:w;if(ctx.measureText(t).width>areaW){t2lines.push(line2);line2=w;}else line2=t;});
+    if(line2)t2lines.push(line2);
+    t2lines=t2lines.slice(0,3);
+  }
 
-### Funcionalidades implementadas
-- Campos: Título, Subtítulo, Tag
-- **3 tamanhos:**
-  - ⬛ Quadrado 1:1 → 800×800 ✅
-  - 🖼 X Paisagem → 1500×500 (ainda ajustando proporções)
-  - 📱 X Retrato 4:5 → 1080×1350 ✅
-- **Halftone sempre ativo** (toggle removido)
-- Slider de pontos 3–14px
-- **3 estilos** de halftone: Wave, Uniforme, Gradiente (padrão)
-- **Foto opcional** com posições: Direita / Esquerda / Fundo inteiro
-- **2 fontes**: Montserrat (padrão), Cascadia Code
-- **9 posições de texto** (grid 3×3):
+  var gap=Math.round(szMin*.022);
+  var totalH=(th3?th3+gap:0)+(t1lines.length*lh1)+(t2lines.length>0?gap+t2lines.length*lh2:0);
 
-| ↖ esq. cima | ↑ centro cima | ↗ dir. cima |
-|---|---|---|
-| ← centro esq. | ⊕ centro | → centro dir. |
-| ↙ esq. baixo | ⊕↓ centro baixo | ↘ dir. baixo |
+  // ── vertical start ──
+  var topPad=Math.round(szMin*.07);
+  var startY;
+  if(isBot){
+    startY=areaBottom-totalH-Math.round(sz*.03);
+  } else if(isVCtr&&!isBot){
+    var midY=(topPad+(areaBottom-topPad))/2;
+    startY=midY-totalH/2;
+  } else {
+    startY=topPad;
+  }
 
-- Logos checkbox (default checked)
-- Download PNG nas 2 variantes de cor
+  // ── horizontal anchor ──
+  function anchorX(lineW){
+    if(isCtr) return areaX+areaW/2;
+    if(isRight) return areaX+areaW;
+    return areaX;
+  }
+  var align=isCtr?'center':isRight?'right':'left';
 
-### Tipografia do banner
-- **Tag**: pílula sólida (filled rect + texto invertido)
-- **Título**: stroke 40% (bg color) + fill (fg color) — Montserrat bold
-- **Subtítulo**: stroke 38% + fill — Montserrat
-- `szMin = Math.min(szW, szH)` para proporções de fonte (landscape boost quando szW > szH*1.5)
+  function drawStroked(text, x, y, strokeW){
+    ctx.save();
+    ctx.strokeStyle=bg;
+    ctx.lineWidth=strokeW;
+    ctx.lineJoin='round';
+    ctx.miterLimit=2;
+    ctx.strokeText(text,x,y);
+    ctx.fillStyle=fg;
+    ctx.fillText(text,x,y);
+    ctx.restore();
+  }
 
-### Logos no banner
-- `drawLogos(ctx, szW, v.fg, v.bg, false, szH)` — passa szH para calcular y0 correto
-- `szBase = Math.min(sz, ht||sz)` para proporções dentro da função
-- `lpad = sz*0.015` (quase borda a borda)
+  // ── draw text ──
+  var cy=startY;
+  ctx.textBaseline='top';
 
----
+  // Tag — solid pill
+  if(t3&&t3.trim()){
+    ctx.font='bold '+fs3+'px '+ff;
+    var t3u=t3.trim().toUpperCase();
+    var tw3=ctx.measureText(t3u).width;
+    var tagPad=Math.round(szMin*.014);
+    var tx3=isCtr?(areaX+areaW/2-(tw3+tagPad*2)/2):isRight?(areaX+areaW-tw3-tagPad*2):areaX;
+    ctx.fillStyle=fg;ctx.fillRect(tx3,cy,tw3+tagPad*2,th3);
+    ctx.fillStyle=bg;ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(t3u,tx3+tagPad,cy+th3/2);
+    ctx.textBaseline='top';cy+=th3+gap;
+  }
 
-## 🐛 Bugs resolvidos (histórico)
+  // Title — large text with thick stroke
+  if(t1lines.length){
+    ctx.font='bold '+fs1+'px '+ff;
+    ctx.textAlign=align;
+    var sw1=Math.max(4,Math.round(fs1*.40));
+    t1lines.forEach(function(l){
+      drawStroked(l,anchorX(ctx.measureText(l).width),cy,sw1);
+      cy+=lh1;
+    });
+    cy+=gap;
+  }
 
-| Bug | Causa | Fix |
-|---|---|---|
-| Elipses no halftone | Arcos sem `closePath()` no canvas path batch | Adicionado `ctx.closePath()` após cada `arc()` |
-| Texto espelhado no arco | Loop de caracteres no sentido errado | Invertido: começa no ângulo maior (esquerda) decresce |
-| Logos cortados no circular | `lpad/lw` fixos não respeitavam geometria do círculo | Cálculo dinâmico com `sqrt(r² - dy²)` |
-| `szW is not defined` no avatar | `szW` escapou do escopo do `renderBanner` IIFE para dentro do `renderAvatar` | Revertido para `sz` simples no avatar |
-| Banner trava ao gerar | `document.getElementById('fntSans')` retornava `null` (elemento removido) e `.checked` jogava TypeError | Removida a referência ao `fntSans` inexistente |
-| Montserrat não carregava (font promise hanging) | `FontFace.load()` travava sem resolver nem rejeitar | Removido todo async font loading; usa apenas `@font-face` CSS com arquivo local |
-| Logos sumindo no landscape | `drawLogos` recebia `szH` na posição errada dos parâmetros (como `fg`) | Corrigida assinatura: `drawLogos(ctx, sz, fg, bg, circ, ht)` |
-| drawWaveHT com elipses | `var w` interno sombreava o parâmetro `w` (JS hoisting) | Renomeado para `var wv` interno |
-| Banner não renderizava | IIFE dentro de `renderBanner` — `szW` declarado dentro mas referenciado fora | Isolado corretamente dentro do IIFE |
-| Fonte do canvas com `;` | `ctx.font = '...' + fontFace + ';'` — canvas não aceita `;` | Removido o `;` da string de fonte |
-| Stroke invisível no handle circular | `strokeStyle = bg` (mesma cor do arc strip) | `skipBg=true` no handle: remove strip, usa só stroke+fill |
+  // Subtitle — medium stroke
+  if(t2lines.length){
+    ctx.font='bold '+fs2+'px '+ff;
+    ctx.textAlign=align;
+    var sw2=Math.max(3,Math.round(fs2*.38));
+    t2lines.forEach(function(l){
+      drawStroked(l,anchorX(ctx.measureText(l).width),cy,sw2);
+      cy+=lh2;
+    });
+  }
+}
 
----
+function makeCard(bgc,fgc,label,dlName){
+  var card=document.createElement('div');card.className='card';
+  var hd=document.createElement('div');hd.className='card-hd';
+  hd.innerHTML='<div style="width:9px;height:9px;border-radius:50%;background:'+bgc+';"></div>'+label;
+  var bd=document.createElement('div');bd.className='card-bd';
+  var cv=document.createElement('canvas');bd.appendChild(cv);
+  var ft=document.createElement('div');ft.className='card-ft';
+  var btn=document.createElement('button');btn.textContent='Baixar PNG';btn.className='dl-btn';
+  btn.style.background=bgc;btn.style.color='#1a1a1a';
+  btn.onclick=function(){var a=document.createElement('a');a.download=dlName;a.href=cv.toDataURL();a.click();};
+  ft.appendChild(btn);card.appendChild(hd);card.appendChild(bd);card.appendChild(ft);
+  return{card:card,cv:cv};
+}
+function renderAvatar(){
+  if(!_img)return;
+  var circ=document.getElementById('circ').checked;
+  var gs=parseInt(document.getElementById('avGS').value);
+  var txt=document.getElementById('avTXT').value,lg=document.getElementById('avLG').checked;
+  var pv=document.getElementById('avPV');pv.innerHTML='';var sz=800;
+  VARS.forEach(function(v){
+    var r=makeCard(v.bg,v.fg,v.label,'avatar-thegarage-'+v.id+'.png');
+    var cv=r.cv;cv.width=sz;cv.height=sz;cv.style.borderRadius=circ?'50%':'3px';
+    pv.appendChild(r.card);var ctx=cv.getContext('2d');
+    if(circ){
+      ctx.fillStyle=v.bg;
+      ctx.beginPath();ctx.arc(sz/2,sz/2,sz/2,0,Math.PI*2);ctx.fill();
+      ctx.save();
+      ctx.beginPath();ctx.arc(sz/2,sz/2,sz/2,0,Math.PI*2);ctx.clip();
+      drawPhotoHT(_img,ctx,sz,v.bg,v.fg,v.inv,false,gs);
+      if(lg) drawLogos(ctx,sz,v.fg,v.bg,true);
+      if(txt) drawHandle(ctx,sz,txt,v.fg,v.bg,lg,true);
+      ctx.restore();
+    } else {
+      drawPhotoHT(_img,ctx,sz,v.bg,v.fg,v.inv,false,gs);
+      if(txt) drawHandle(ctx,sz,txt,v.fg,v.bg,lg,false);
+      if(lg) drawLogos(ctx,sz,v.fg,v.bg,false);
+    }
+  });
+  pv.style.display='grid';
+}
+function drawBannerPhoto(img,ctx,sz,szH,fg,inv,gs,pos){
+  var startX=pos==='left'?0:(pos==='full'?0:Math.round(sz*.44));
+  var endX=pos==='left'?Math.round(sz*.56):sz;
+  var tmp=document.createElement('canvas');tmp.width=sz;tmp.height=sz;
+  var tc=tmp.getContext('2d');
+  var s=Math.min(img.width,img.height);
+  var photoW=endX-startX;
+  tc.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,startX,0,photoW,szH);
+  var px=tc.getImageData(0,0,sz,szH).data;
+  ctx.save();
+  ctx.beginPath();ctx.rect(startX,0,photoW,szH);ctx.clip();
+  ctx.fillStyle=fg;ctx.beginPath();
+  for(var y=0;y<szH;y+=gs){
+    for(var x=Math.floor(startX/gs)*gs;x<endX;x+=gs){
+      var sum=0,cnt=0;
+      for(var dy=0;dy<gs&&y+dy<sz;dy++){for(var dx=0;dx<gs&&x+dx<sz;dx++){
+        var i=((y+dy)*sz+(x+dx))*4;sum+=.299*px[i]+.587*px[i+1]+.114*px[i+2];cnt++;
+      }}
+      var lum=sum/cnt/255,t=inv?lum:(1-lum);
+      var r=Math.min((gs/2)*t*1.45,gs/2*.98);
+      if(r>0.15){ctx.moveTo(x+gs/2+r,y+gs/2);ctx.arc(x+gs/2,y+gs/2,r,0,Math.PI*2);ctx.closePath();}
+    }
+  }
+  ctx.fill();ctx.restore();
+}
+function renderBanner(){
+  (function(){
+  var t1=document.getElementById('bnT1').value,t2=document.getElementById('bnT2').value,t3=document.getElementById('bnT3').value;
+  var lg=document.getElementById('bnLG').checked;
+  var gs=parseInt(document.getElementById('bnGS').value);
+  var pos=_bnImg?(document.getElementById('posLeft').checked?'left':document.getElementById('posFull').checked?'full':'right'):'none';
+  var szW=document.getElementById('szLand').checked?1500:document.getElementById('szPort').checked?1080:800;
+  var szH=document.getElementById('szLand').checked?500:document.getElementById('szPort').checked?1350:800;
+  var sz=szW;
+  var pv=document.getElementById('bnPV');pv.innerHTML='';
+  VARS.forEach(function(v){
+    var r=makeCard(v.bg,v.fg,v.label,'banner-thegarage-'+v.id+'.png');
+    var cv=r.cv;cv.width=szW;cv.height=szH;cv.style.borderRadius='3px';
+    pv.appendChild(r.card);var ctx=cv.getContext('2d');
+    var pat=document.getElementById('patUniform').checked?'uniform':document.getElementById('patGrad').checked?'grad':'wave';
+    if(pat==='uniform') drawUniformDots(ctx,szW,szH,v.bg,v.fg,gs);
+    else if(pat==='grad') drawGradientDots(ctx,szW,szH,v.bg,v.fg,gs);
+    else drawWaveHT(ctx,szW,szH,v.bg,v.fg,gs);
+    if(_bnImg) drawBannerPhoto(_bnImg,ctx,szW,szH,v.fg,v.inv,gs,pos);
+    drawBannerTxt(ctx,szW,szH,t1,t2,t3,v.fg,v.bg,lg,pos);
+    if(lg) drawLogos(ctx,szW,v.fg,v.bg,false,szH);
+  });
+  pv.style.display='grid';
+  })();
+}
+function loadFile(f){
+  if(!f||!f.type.startsWith('image/'))return;
+  var fr=new FileReader();
+  fr.onload=function(e){var img=new Image();img.onload=function(){_img=img;document.getElementById('avCtrl').style.display='flex';renderAvatar();};img.src=e.target.result;};
+  fr.readAsDataURL(f);
+}
+function onDrop(e){e.preventDefault();document.getElementById('dz').classList.remove('drag');loadFile(e.dataTransfer.files[0]);}
+document.getElementById('fi').onchange=function(e){loadFile(e.target.files[0]);};
+function copyLink(){
+  navigator.clipboard.writeText('https://solsentryai.github.io/thegarage/').then(function(){
+    var btn=document.getElementById('copyBtn');
+    btn.textContent='COPIADO!';btn.style.background='#C299EE';btn.style.color='#1a1a1a';
+    setTimeout(function(){btn.textContent='COPIAR';btn.style.background='#1a1a1a';btn.style.color='var(--lime)';},1800);
+  });
+}
+document.getElementById('circ').onchange=renderAvatar;
+document.getElementById('avGS').oninput=function(){document.getElementById('avGSo').textContent=this.value+'px';renderAvatar();};
+document.getElementById('avTXT').oninput=renderAvatar;
+document.getElementById('avLG').onchange=renderAvatar;
 
-## 📐 Funções principais (JS)
-
-```javascript
-// Avatar
-drawPhotoHT(img, ctx, sz, bg, fg, inv, circ, gs)     // halftone da foto
-drawHandle(ctx, sz, txt, fg, bg, hasLg, circ)         // handle/nome
-drawLogos(ctx, sz, fg, bg, circ, ht)                  // logos (circ=arc, false=barra)
-drawLogosArcSegments(ctx, sz, fg, bg)                  // logos em arco c/ ícones
-arcText(ctx, text, cx, cy, r, fg, bg, fs, arcCenter, arcSpan, fontFam, strokeW, skipBg)
-
-// Banner
-drawBannerTxt(ctx, sz, szH, t1, t2, t3, fg, bg, hasLg, pos)
-drawBannerPhoto(img, ctx, sz, szH, fg, inv, gs, pos)
-drawWaveHT(ctx, w, h, bg, fg, gs)
-drawUniformDots(ctx, w, h, bg, fg, gs)
-drawGradientDots(ctx, w, h, bg, fg, gs)
-drawStroked(text, x, y, strokeW)                      // stroke+fill helper dentro de drawBannerTxt
-```
-
----
-
-## ⏳ O que ainda falta ajustar
-
-- [ ] **Paisagem (1500×500)** — proporções de texto e logos ainda em ajuste fino
-- [ ] **Logo bar horizontal** — lpad reduzido para 1.5% mas pode precisar mais ajuste visual
-- [ ] Possível revisão do layout de texto no paisagem sem foto
-
----
-
-## 🚀 Rodapé do site
-
-```
-github.com/solsentryai/thegarage · THE/GARAGE Cohort.1 · SuperTeam Brasil
-
-Criado por Crash · builder of Solsentry · on THE/GARAGE for hackathon frontier
-```
-
-- Crash → https://x.com/crashdiniz
-- Solsentry → https://x.com/solsentryai
-- Estilo: Montserrat bold, cor limão `#EAFD7C`, stroke CSS 1.5px
+document.getElementById('bnGS').oninput=function(){document.getElementById('bnGSo').textContent=this.value+'px';debounceBanner();};
+var _bnTimer=null;
+function debounceBanner(){clearTimeout(_bnTimer);_bnTimer=setTimeout(function(){if(document.getElementById('bnPV').style.display!=='none')renderBanner();},400);}
+document.getElementById('bnT1').oninput=debounceBanner;
+document.getElementById('bnT2').oninput=debounceBanner;
+document.getElementById('bnT3').oninput=debounceBanner;
+document.querySelectorAll('input[name="bnPat"],input[name="bnSz"],input[name="bnFont"],input[name="bnTP"]').forEach(function(el){el.onchange=debounceBanner;});
+document.getElementById('bnLG').onchange=debounceBanner;
+document.getElementById('bnFI').onchange=function(e){
+  var f=e.target.files[0];if(!f||!f.type.startsWith('image/'))return;
+  var fr=new FileReader();
+  fr.onload=function(ev){var img=new Image();img.onload=function(){
+    _bnImg=img;
+    document.getElementById('bnFIlabel').textContent='Foto carregada';
+    document.getElementById('bnFIclear').style.display='inline-block';
+    document.getElementById('bnPosRow').style.display='flex';
+    document.getElementById('bnDZ').style.borderColor='#EAFD7C';
+    document.getElementById('bnDZ').style.color='#EAFD7C';
+  };img.src=ev.target.result;};
+  fr.readAsDataURL(f);
+};
+function clearBnImg(){
+  _bnImg=null;
+  document.getElementById('bnFI').value='';
+  document.getElementById('bnFIlabel').textContent='Escolher foto para o banner';
+  document.getElementById('bnFIclear').style.display='none';
+  document.getElementById('bnPosRow').style.display='none';
+  document.getElementById('bnDZ').style.borderColor='#444';
+  document.getElementById('bnDZ').style.color='#666';
+}
+</script>
+</body>
+</html>
