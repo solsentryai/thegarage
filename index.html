@@ -238,6 +238,11 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
 </footer>
 
 <script>
+var _fontsReady=Promise.race([
+  new FontFace('Montserrat','url(Montserrat-VariableFont_wght.ttf)',{weight:'100 900',style:'normal'})
+    .load().then(function(f){document.fonts.add(f);return f;}).catch(function(){return null;}),
+  new Promise(function(r){setTimeout(r,1500);})
+]);
 (function(){
   var cv=document.getElementById('heroCanvas');
   var hero=document.getElementById('hero');
@@ -248,7 +253,7 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
     ctx.fillStyle='#C299EE';ctx.beginPath();
     for(var y=0;y<h;y+=gs){for(var x=0;x<w;x+=gs){
       var nx=x/w;
-      var t=Math.max(0,Math.min(1,(nx-0.38)/0.52));
+      var t=Math.max(0,Math.min(1,(nx-0.48)/0.48));
       if(t<0.01) continue;
       var dr=Math.min((gs/2)*Math.pow(t,0.55)*.92,gs/2*.9);
       if(dr>0.2){ctx.moveTo(x+gs/2+dr,y+gs/2);ctx.arc(x+gs/2,y+gs/2,dr,0,Math.PI*2);ctx.closePath();}
@@ -437,7 +442,8 @@ function drawLogos(ctx,sz,fg,bg,circ){
   for(var c=0;c<3;c++){var px_=colx+c*(colW+colG);ctx.fillRect(px_,mid-colH/2,colW,colH);ctx.fillRect(px_-1,mid-colH/2-3,colW+2,3);}
   ctx.textAlign='left';ctx.fillText('COLOSSEUM',colx+pillW+5,mid);
 }
-function arcText(ctx,text,cx,cy,r,fg,bg,fs,arcCenter,arcSpan){
+function arcText(ctx,text,cx,cy,r,fg,bg,fs,arcCenter,arcSpan,fontFam){
+  fontFam=fontFam||'"Courier New",monospace';
   var chars=text.split('');var n=chars.length;if(!n)return;
   var step=arcSpan/n;
   // Background arc strip
@@ -451,7 +457,7 @@ function arcText(ctx,text,cx,cy,r,fg,bg,fs,arcCenter,arcSpan){
   ctx.restore();
   // Characters — start from left (larger angle) going right (decreasing angle)
   ctx.fillStyle=fg;
-  ctx.font='bold '+fs+'px "Courier New",monospace';
+  ctx.font='bold '+fs+'px '+fontFam;
   ctx.textAlign='center';ctx.textBaseline='middle';
   var startA=arcCenter+arcSpan/2-step/2;
   for(var i=0;i<n;i++){
@@ -467,17 +473,23 @@ function drawHandle(ctx,sz,txt,fg,bg,hasLg,circ){
   if(!txt||!txt.trim())return;
   if(circ){
     var fs=Math.round(sz*.05);
-    ctx.font='bold '+fs+'px "Courier New",monospace';
+    ctx.font='bold '+fs+'px "Montserrat",sans-serif';
     var tw=ctx.measureText(txt.trim()).width;
     var r=sz/2*(hasLg?.65:.91);
     var span=Math.min((tw*1.2)/r, Math.PI*.65);
-    arcText(ctx,txt.trim(),sz/2,sz/2,r,fg,bg,fs,Math.PI/2,span);
+    arcText(ctx,txt.trim(),sz/2,sz/2,r,fg,bg,fs,Math.PI/2,span,'"Montserrat",sans-serif');
     return;
   }
   var sh=Math.round(sz*.075),lgSh=hasLg?Math.round(sz*.09):0,y0=sz-sh-lgSh;
   ctx.fillStyle=fg;ctx.fillRect(0,y0,sz,sh);ctx.fillStyle=bg;
-  ctx.font='bold '+Math.round(sh*.52)+'px "Courier New",monospace';
-  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt.trim(),sz/2,y0+sh/2);
+  var hfs=Math.round(sh*.52);
+  ctx.font='bold '+hfs+'px "Montserrat",sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.save();
+  ctx.strokeStyle=fg;ctx.lineWidth=Math.round(hfs*.45);ctx.lineJoin='round';ctx.miterLimit=2;
+  ctx.strokeText(txt.trim(),sz/2,y0+sh/2);
+  ctx.fillStyle=bg;ctx.fillText(txt.trim(),sz/2,y0+sh/2);
+  ctx.restore();
 }
 function drawBannerTxt(ctx,sz,t1,t2,t3,fg,bg,hasLg,pos){
   var hasPhoto=!!pos&&pos!=='none';
@@ -675,7 +687,7 @@ function drawBannerPhoto(img,ctx,sz,fg,inv,gs,pos){
   ctx.fill();ctx.restore();
 }
 function renderBanner(){
-  document.fonts.ready.then(function(){
+  _fontsReady.then(function(){
   var t1=document.getElementById('bnT1').value,t2=document.getElementById('bnT2').value,t3=document.getElementById('bnT3').value;
   var ht=document.getElementById('bnHT').checked,lg=document.getElementById('bnLG').checked;
   var gs=parseInt(document.getElementById('bnGS').value);
