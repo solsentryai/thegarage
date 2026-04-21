@@ -238,11 +238,7 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
 </footer>
 
 <script>
-var _fontsReady=Promise.race([
-  new FontFace('Montserrat','url(Montserrat-VariableFont_wght.ttf)',{weight:'100 900',style:'normal'})
-    .load().then(function(f){document.fonts.add(f);return f;}).catch(function(){return null;}),
-  new Promise(function(r){setTimeout(r,1500);})
-]);
+
 (function(){
   var cv=document.getElementById('heroCanvas');
   var hero=document.getElementById('hero');
@@ -687,7 +683,7 @@ function drawBannerPhoto(img,ctx,sz,fg,inv,gs,pos){
   ctx.fill();ctx.restore();
 }
 function renderBanner(){
-  _fontsReady.then(function(){
+  (function(){
   var t1=document.getElementById('bnT1').value,t2=document.getElementById('bnT2').value,t3=document.getElementById('bnT3').value;
   var ht=document.getElementById('bnHT').checked,lg=document.getElementById('bnLG').checked;
   var gs=parseInt(document.getElementById('bnGS').value);
@@ -708,7 +704,7 @@ function renderBanner(){
     if(lg) drawLogos(ctx,sz,v.fg,v.bg,false);
   });
   pv.style.display='grid';
-  });
+  })();
 }
 function loadFile(f){
   if(!f||!f.type.startsWith('image/'))return;
