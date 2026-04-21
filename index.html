@@ -198,7 +198,7 @@ footer a{color:#444;text-decoration:none;}footer a:hover{color:var(--lime);}
       <div class="row">
         <span class="lbl">Tamanho</span>
         <label class="ck"><input type="radio" name="bnSz" id="szSq" checked> ⬛ Quadrado 1:1</label>
-        <label class="ck"><input type="radio" name="bnSz" id="szLand"> 🖼 X Paisagem 16:9</label>
+        <label class="ck"><input type="radio" name="bnSz" id="szLand"> 🖼 X Paisagem</label>
         <label class="ck"><input type="radio" name="bnSz" id="szPort"> 📱 X Retrato 4:5</label>
       </div>
       <hr class="sep">
@@ -431,13 +431,16 @@ function drawLogosArcSegments(ctx,sz,fg,bg){
 }
 function drawLogos(ctx,sz,fg,bg,circ,ht){
   if(circ){drawLogosArcSegments(ctx,sz,fg,bg);return;}
-  var szBase=Math.min(sz,ht||sz);
-  var sh=Math.round(szBase*.09),y0=(ht||sz)-sh,mid=y0+sh/2;
+  var szH=ht||sz;
+  var isLand=sz>szH*1.5;
+  // Landscape: taller bar (13% of szH) + larger font ratio so logos visually fill the wide canvas
+  var sh=isLand?Math.round(szH*.13):Math.round(Math.min(sz,szH)*.09);
+  var y0=szH-sh,mid=y0+sh/2;
   var lpad=Math.round(sz*.015),lw=sz-Math.round(sz*.03);
-  var zw=lw/4,fs=Math.round(sh*.26);
+  var zw=lw/4,fs=Math.round(sh*(isLand?.36:.26));
   var bh=Math.round(fs*.22),bw=Math.round(fs*.68),sp=Math.round(fs*.33);
   ctx.fillStyle=bg;ctx.fillRect(0,y0,sz,sh);
-  ctx.fillStyle=fg;ctx.fillRect(lpad,y0+1,lw,Math.max(1,Math.round(sz*.0015)));
+  ctx.fillStyle=fg;ctx.fillRect(0,y0+1,sz,Math.max(1,Math.round(sz*.0015)));
   ctx.textBaseline='middle';
   // Z1: superteam brasil
   var z1=lpad+zw/2;ctx.font=fs+'px monospace';
@@ -526,15 +529,17 @@ function drawBannerTxt(ctx,sz,szH,t1,t2,t3,fg,bg,hasLg,pos){
   var hasPhoto=!!pos&&pos!=='none';
   var onLeft=pos==='left';
   var isFull=pos==='full';
-  var pad=sz*.08;
-  var areaW=onLeft?(sz*.52-pad):(!isFull&&hasPhoto)?(sz*.42-pad):(sz-Math.round(szMin*.1));
-  var areaX=onLeft?(sz*.48+sz*.04):pad;
-  var logoH=hasLg?Math.round(sz*.09):0;
-  var areaBottom=szH-logoH-Math.round(sz*.02);
-
+  // szMin MUST be computed before areaW (which references it)
   var szMin=Math.min(sz,szH);
-  // For landscape: boost fonts so text fills horizontal space better
-  if(sz>szH*1.5) szMin=Math.round(szH*1.1);
+  var isLand=sz>szH*1.5;
+  // For landscape: boost fonts significantly so text fills horizontal space
+  if(isLand) szMin=Math.round(szH*1.35);
+
+  var pad=isLand?Math.round(szMin*.06):sz*.08;
+  var areaW=onLeft?(sz*.52-pad):(!isFull&&hasPhoto)?(sz*.42-pad):(sz-pad*2);
+  var areaX=onLeft?(sz*.48+sz*.04):pad;
+  var logoH=hasLg?(isLand?Math.round(szH*.13):Math.round(sz*.09)):0;
+  var areaBottom=szH-logoH-Math.round(szMin*.02);
   var fntId=document.getElementById('fntImpact').checked?'impact':'mono';
   var ff=fntId==='impact'?'"Cascadia Code","Courier New",monospace':'"Montserrat",sans-serif';
 
@@ -699,11 +704,20 @@ function renderAvatar(){
 function drawBannerPhoto(img,ctx,sz,szH,fg,inv,gs,pos){
   var startX=pos==='left'?0:(pos==='full'?0:Math.round(sz*.44));
   var endX=pos==='left'?Math.round(sz*.56):sz;
-  var tmp=document.createElement('canvas');tmp.width=sz;tmp.height=sz;
-  var tc=tmp.getContext('2d');
-  var s=Math.min(img.width,img.height);
   var photoW=endX-startX;
-  tc.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,startX,0,photoW,szH);
+  // Cover-style crop: source region matches dest aspect ratio (no stretch)
+  var destR=photoW/szH, srcR=img.width/img.height;
+  var srcX,srcY,srcW,srcH;
+  if(srcR>destR){
+    srcH=img.height; srcW=Math.round(img.height*destR);
+    srcX=Math.round((img.width-srcW)/2); srcY=0;
+  } else {
+    srcW=img.width; srcH=Math.round(img.width/destR);
+    srcX=0; srcY=Math.round((img.height-srcH)/2);
+  }
+  var tmp=document.createElement('canvas');tmp.width=sz;tmp.height=szH;
+  var tc=tmp.getContext('2d');
+  tc.drawImage(img,srcX,srcY,srcW,srcH,startX,0,photoW,szH);
   var px=tc.getImageData(0,0,sz,szH).data;
   ctx.save();
   ctx.beginPath();ctx.rect(startX,0,photoW,szH);ctx.clip();
@@ -711,7 +725,7 @@ function drawBannerPhoto(img,ctx,sz,szH,fg,inv,gs,pos){
   for(var y=0;y<szH;y+=gs){
     for(var x=Math.floor(startX/gs)*gs;x<endX;x+=gs){
       var sum=0,cnt=0;
-      for(var dy=0;dy<gs&&y+dy<sz;dy++){for(var dx=0;dx<gs&&x+dx<sz;dx++){
+      for(var dy=0;dy<gs&&y+dy<szH;dy++){for(var dx=0;dx<gs&&x+dx<sz;dx++){
         var i=((y+dy)*sz+(x+dx))*4;sum+=.299*px[i]+.587*px[i+1]+.114*px[i+2];cnt++;
       }}
       var lum=sum/cnt/255,t=inv?lum:(1-lum);
@@ -759,7 +773,7 @@ document.getElementById('avGS').oninput=function(){document.getElementById('avGS
 document.getElementById('avTXT').oninput=renderAvatar;
 document.getElementById('avLG').onchange=renderAvatar;
 
-document.getElementById('bnGS').oninput=function(){document.getElementById('bnGSo').textContent=this.value+'px';};
+document.getElementById('bnGS').oninput=function(){document.getElementById('bnGSo').textContent=this.value+'px';bnAutoD();};
 document.getElementById('bnFI').onchange=function(e){
   var f=e.target.files[0];if(!f||!f.type.startsWith('image/'))return;
   var fr=new FileReader();
@@ -770,9 +784,18 @@ document.getElementById('bnFI').onchange=function(e){
     document.getElementById('bnPosRow').style.display='flex';
     document.getElementById('bnDZ').style.borderColor='#EAFD7C';
     document.getElementById('bnDZ').style.color='#EAFD7C';
+    bnAuto();
   };img.src=ev.target.result;};
   fr.readAsDataURL(f);
 };
+// Auto re-render banner on any control change (only after first "Gerar banner" click)
+function bnAuto(){if(document.getElementById('bnPV').style.display!=='none')renderBanner();}
+var _bnT;function bnAutoD(){clearTimeout(_bnT);_bnT=setTimeout(bnAuto,120);}
+['bnT1','bnT2','bnT3'].forEach(function(id){document.getElementById(id).oninput=bnAutoD;});
+['bnLG','szSq','szLand','szPort','patWave','patUniform','patGrad',
+ 'posRight','posLeft','posFull','fntMono','fntImpact',
+ 'tpTL','tpTR','tpBL','tpBR','tpCC','tpCB','tpCT','tpCL','tpCR'
+].forEach(function(id){var el=document.getElementById(id);if(el)el.onchange=bnAuto;});
 function clearBnImg(){
   _bnImg=null;
   document.getElementById('bnFI').value='';
@@ -781,6 +804,7 @@ function clearBnImg(){
   document.getElementById('bnPosRow').style.display='none';
   document.getElementById('bnDZ').style.borderColor='#444';
   document.getElementById('bnDZ').style.color='#666';
+  bnAuto();
 }
 </script>
 </body>
